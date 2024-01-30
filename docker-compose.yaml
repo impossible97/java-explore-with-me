@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  stats_service:
+    build:
+      context: ./stats_service/stats-server
+      dockerfile: ./Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - db
+    environment:
+      SERVER_PORT: 9090
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/exploreWithMe
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_DATABASE: postgresql
+      SPRING_DATASOURCE_UNDERCLASSMEN: org.postgresql.Driver
+
+  db:
+    image: postgres:14-alpine
+    container_name: exploreWithMe-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: exploreWithMe

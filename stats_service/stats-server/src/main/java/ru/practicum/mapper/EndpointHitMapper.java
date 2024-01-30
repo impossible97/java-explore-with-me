@@ -1,8 +1,8 @@
-package mapper;
+package ru.practicum.mapper;
 
 import ru.practicum.dto.EndpointHitDto;
 import lombok.AllArgsConstructor;
-import model.EndpointHit;
+import ru.practicum.model.EndpointHit;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EndpointHitMapper {
 
-    public EndpointHit toEntity(EndpointHitDto endpointHitDto) {
+    public EndpointHit toEntity(EndpointHitDto endpointHitDto, String ip) {
 
         EndpointHit endpointHit = new EndpointHit();
 
         endpointHit.setApp(endpointHitDto.getApp());
-        endpointHit.setIp(endpointHitDto.getIp());
+        endpointHit.setIp(ip);
         endpointHit.setUri(endpointHitDto.getUri());
         endpointHit.setTimestamp(LocalDateTime.now());
 

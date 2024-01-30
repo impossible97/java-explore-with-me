@@ -1,4 +1,4 @@
-package model;
+package ru.practicum.model;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,10 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,6 +17,8 @@ import java.time.LocalDateTime;
 @ToString
 public class EndpointHit {
     @Id
+    @SequenceGenerator(name = "statistics_sequence", sequenceName = "statistics_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "statistics_sequence")
     long id;
     @Column(name = "applicationName")
     String app;
