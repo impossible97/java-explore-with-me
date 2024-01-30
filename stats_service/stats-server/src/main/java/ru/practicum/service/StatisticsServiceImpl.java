@@ -7,6 +7,7 @@ import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.EndpointHitRepository;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -20,17 +21,19 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final EndpointHitMapper mapper;
 
     @Override
-    public void saveStatistics(String app, String uri, String ip) {
+    public void saveStatistics(String app, String uri, String ip, HttpServletRequest request) {
 
         EndpointHit endpointHit = mapper.toEntity(makeDtoFromRequest(app, uri), ip);
+
+        String anotherIp = request.getRemoteAddr();
+        String requestURI = request.getRequestURI();
 
         repository.save(endpointHit);
     }
 
     @Override
-    public List<EndpointHitDto> getStats(String requestStart, String requestEnd, List<String> uris, Boolean unique) {
-        LocalDateTime start = LocalDateTime.parse(requestStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        LocalDateTime end = LocalDateTime.parse(requestEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    public List<EndpointHitDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
         if (uris != null) {
             if (unique) {
                 return repository.findAllByTimestampBetweenAndUriInOrderByTimestamp(start, end, uris).stream()
