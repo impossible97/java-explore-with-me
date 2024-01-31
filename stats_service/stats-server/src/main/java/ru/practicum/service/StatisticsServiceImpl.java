@@ -7,10 +7,11 @@ import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.EndpointHitRepository;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,56 +22,47 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final EndpointHitMapper mapper;
 
     @Override
-    public void saveStatistics(String app, String uri, String ip, HttpServletRequest request) {
-
-        EndpointHit endpointHit = mapper.toEntity(makeDtoFromRequest(app, uri), ip);
-
-        String anotherIp = request.getRemoteAddr();
-        String requestURI = request.getRequestURI();
+    public void saveStatistics(EndpointHitDto endpointHitDto) {
+        EndpointHit endpointHit = mapper.toEntity(endpointHitDto);
 
         repository.save(endpointHit);
     }
 
     @Override
-    public List<EndpointHitDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public Set<EndpointHitDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, int from, int size) {
 
         if (uris != null) {
             if (unique) {
-                return repository.findAllByTimestampBetweenAndUriInOrderByTimestamp(start, end, uris).stream()
+                return repository.findAllByTimestampBetweenAndUriIn(start, end, uris).stream()
                         .map(endpointHit ->
                                 mapper.toDto(endpointHit,
-                                        repository.countDistinctByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .collect(Collectors.toList());
+                                        repository.countDistinctByIp(endpointHit.getUri())))
+                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             } else {
-                return repository.findAllByTimestampBetweenAndUriInOrderByTimestamp(start, end, uris).stream()
+                return repository.findAllByTimestampBetweenAndUriIn(start, end, uris).stream()
                         .map(endpointHit ->
                                 mapper.toDto(endpointHit,
                                         repository.countByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .collect(Collectors.toList());
+                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             }
         } else {
             if (unique) {
-                return repository.findAllByTimestampBetweenOrderByTimestamp(start, end).stream()
+                return repository.findAllByTimestampBetween(start, end).stream()
                         .map(endpointHit ->
                                 mapper.toDto(endpointHit,
-                                        repository.countDistinctByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .collect(Collectors.toList());
+                                        repository.countDistinctByIp(endpointHit.getUri())))
+                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             } else {
-                return repository.findAllByTimestampBetweenOrderByTimestamp(start, end).stream()
+                return repository.findAllByTimestampBetween(start, end).stream()
                         .map(endpointHit ->
                                 mapper.toDto(endpointHit,
                                         repository.countByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .collect(Collectors.toList());
+                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
             }
         }
-    }
-
-    private EndpointHitDto makeDtoFromRequest(String app, String uri) {
-        EndpointHitDto endpointHitDto = new EndpointHitDto();
-
-        endpointHitDto.setApp(app);
-        endpointHitDto.setUri(uri);
-
-        return endpointHitDto;
     }
 }

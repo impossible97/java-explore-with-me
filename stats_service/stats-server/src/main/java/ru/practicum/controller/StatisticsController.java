@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
 import ru.practicum.service.StatisticsService;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -21,19 +21,18 @@ public class StatisticsController {
 
     @PostMapping("/hit")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Information is saved")
-    public void saveStatistics(@RequestHeader(name = "X-Service-Name", required = false) String appName,
-                               @RequestParam(name = "uri", required = false) String uri,
-                               @RequestParam(name = "ip", required = false) String ip,
-                               HttpServletRequest request) {
-        statisticsService.saveStatistics(appName, uri, ip, request);
+    public void saveStatistics(@RequestBody EndpointHitDto endpointHitDto) {
+        statisticsService.saveStatistics(endpointHitDto);
     }
 
     @GetMapping("/stats")
-    public List<EndpointHitDto> getStatistics(
+    public Set<EndpointHitDto> getStatistics(
             @RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(value = "uris", required = false) List<String> uris,
-            @RequestParam(name = "unique", defaultValue = "false") Boolean unique) {
-        return statisticsService.getStats(start, end, uris, unique);
+            @RequestParam(name = "unique", defaultValue = "false") Boolean unique,
+            @RequestParam(name = "from", defaultValue = "0") int from,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+        return statisticsService.getStats(start, end, uris, unique, from, size);
     }
 }

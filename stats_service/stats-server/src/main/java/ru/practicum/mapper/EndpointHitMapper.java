@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EndpointHitMapper {
 
-    public EndpointHit toEntity(EndpointHitDto endpointHitDto, String ip) {
+    public EndpointHit toEntity(EndpointHitDto endpointHitDto) {
 
         EndpointHit endpointHit = new EndpointHit();
 
         endpointHit.setApp(endpointHitDto.getApp());
-        endpointHit.setIp(ip);
+        endpointHit.setIp(endpointHitDto.getIp());
         endpointHit.setUri(endpointHitDto.getUri());
         endpointHit.setTimestamp(LocalDateTime.now());
 
