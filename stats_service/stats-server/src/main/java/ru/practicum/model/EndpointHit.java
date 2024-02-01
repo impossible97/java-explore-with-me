@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 @ToString
 public class EndpointHit {
     @Id
-    @SequenceGenerator(name = "statistics_sequence", sequenceName = "statistics_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "statistics_sequence")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     @Column(name = "applicationName")
     String app;

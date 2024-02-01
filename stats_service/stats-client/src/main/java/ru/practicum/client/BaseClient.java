@@ -1,46 +1,59 @@
 package ru.practicum.client;
 
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.util.List;
 import java.util.Map;
 
+@Service
+@AllArgsConstructor
 public class BaseClient {
 
-    private final RestTemplate rest;
+    @Value("${stats-server.url}")
+    private String statsServerUri;
 
-    public BaseClient(RestTemplate rest) {
-        this.rest = rest;
+    private final RestTemplate rest = new RestTemplateBuilder()
+            .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUri))
+            .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+            .build();
+
+    public ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {
+        return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
 
-    public <T> ResponseEntity<Object> post(String path, String appName, @Nullable Map<String, Object> parameters) {
-        return makeAndSendRequest(HttpMethod.POST, path, appName, parameters, null);
+    public <T> ResponseEntity<Object> post(String path, T body) {
+        return makeAndSendRequest(HttpMethod.POST, path, null, body);
     }
 
-    public  <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, String appName, @Nullable Map<String, Object> parameters, @Nullable T body) {
-        HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders(appName));
+    public  <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, @Nullable Map<String, Object> parameters, @Nullable T body) {
+        HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
 
-        ResponseEntity<Object> shareitServerResponse;
+        ResponseEntity<Object> responseEntity;
         try {
             if (parameters != null) {
-                shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class, parameters);
+                responseEntity = rest.exchange(path, method, requestEntity, Object.class, parameters);
             } else {
-                shareitServerResponse = rest.exchange(path, method, requestEntity, Object.class);
+                responseEntity = rest.exchange(path, method, requestEntity, Object.class);
             }
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
         }
-        return prepareGatewayResponse(shareitServerResponse);
+        return prepareGatewayResponse(responseEntity);
     }
 
-    private HttpHeaders defaultHeaders(String appName) {
+    private HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.set("X-Service-Name", appName);
         return headers;
     }
 

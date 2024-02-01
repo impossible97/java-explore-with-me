@@ -26,22 +26,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
-
 	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -122,32 +107,32 @@
 											<limit>
 												<counter>INSTRUCTION</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.00</minimum>
+												<minimum>0.01</minimum>
 											</limit>
 											<limit>
 												<counter>LINE</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.0</minimum>
+												<minimum>0.2</minimum>
 											</limit>
 											<limit>
 												<counter>BRANCH</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.0</minimum>
+												<minimum>0.2</minimum>
 											</limit>
 											<limit>
 												<counter>COMPLEXITY</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.0</minimum>
+												<minimum>0.2</minimum>
 											</limit>
 											<limit>
 												<counter>METHOD</counter>
 												<value>COVEREDRATIO</value>
-												<minimum>0.0</minimum>
+												<minimum>0.2</minimum>
 											</limit>
 											<limit>
 												<counter>CLASS</counter>
 												<value>MISSEDCOUNT</value>
-												<maximum>0</maximum>
+												<maximum>1</maximum>
 											</limit>
 										</limits>
 									</rule>

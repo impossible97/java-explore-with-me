@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.service.StatisticsService;
 
 import java.time.LocalDateTime;
@@ -21,12 +22,12 @@ public class StatisticsController {
 
     @PostMapping("/hit")
     @ResponseStatus(value = HttpStatus.CREATED, reason = "Information is saved")
-    public void saveStatistics(@RequestBody EndpointHitDto endpointHitDto) {
-        statisticsService.saveStatistics(endpointHitDto);
+    public void hit(@RequestBody EndpointHitDto endpointHitDto) {
+        statisticsService.hit(endpointHitDto);
     }
 
     @GetMapping("/stats")
-    public Set<EndpointHitDto> getStatistics(
+    public Set<ViewStats> getStats(
             @RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(value = "uris", required = false) List<String> uris,

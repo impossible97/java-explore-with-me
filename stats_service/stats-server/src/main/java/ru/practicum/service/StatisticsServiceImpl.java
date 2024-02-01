@@ -1,18 +1,19 @@
 package ru.practicum.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.EndpointHitDto;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.mapper.EndpointHitMapper;
 import ru.practicum.model.EndpointHit;
 import ru.practicum.repository.EndpointHitRepository;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,47 +22,29 @@ public class StatisticsServiceImpl implements StatisticsService {
     private final EndpointHitRepository repository;
     private final EndpointHitMapper mapper;
 
+    @Transactional
     @Override
-    public void saveStatistics(EndpointHitDto endpointHitDto) {
+    public void hit(EndpointHitDto endpointHitDto) {
         EndpointHit endpointHit = mapper.toEntity(endpointHitDto);
 
         repository.save(endpointHit);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Set<EndpointHitDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, int from, int size) {
+    public Set<ViewStats> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique, int from, int size) {
 
         if (uris != null) {
             if (unique) {
-                return repository.findAllByTimestampBetweenAndUriIn(start, end, uris).stream()
-                        .map(endpointHit ->
-                                mapper.toDto(endpointHit,
-                                        repository.countDistinctByIp(endpointHit.getUri())))
-                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                return new HashSet<>(repository.findAllDistinctElementsWithUris(start, end, uris, PageRequest.of(from / size, size)));
             } else {
-                return repository.findAllByTimestampBetweenAndUriIn(start, end, uris).stream()
-                        .map(endpointHit ->
-                                mapper.toDto(endpointHit,
-                                        repository.countByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                return new HashSet<>(repository.findAllElementsWithUris(start, end, uris, PageRequest.of(from / size, size)));
             }
         } else {
             if (unique) {
-                return repository.findAllByTimestampBetween(start, end).stream()
-                        .map(endpointHit ->
-                                mapper.toDto(endpointHit,
-                                        repository.countDistinctByIp(endpointHit.getUri())))
-                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                return new HashSet<>(repository.findAllDistinctElementsWithoutUris(start, end, PageRequest.of(from / size, size)));
             } else {
-                return repository.findAllByTimestampBetween(start, end).stream()
-                        .map(endpointHit ->
-                                mapper.toDto(endpointHit,
-                                        repository.countByIpAndUri(endpointHit.getIp(), endpointHit.getUri())))
-                        .sorted(Comparator.comparing(EndpointHitDto::getHits).reversed())
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+                return new HashSet<>(repository.findAllElementsWithoutUris(start, end, PageRequest.of(from / size, size)));
             }
         }
     }
