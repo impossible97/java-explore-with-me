@@ -30,7 +30,7 @@ public class StatisticsController {
     public Set<ViewStats> getStats(
             @RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-            @RequestParam(value = "uris", required = false) List<String> uris,
+            @RequestParam(name = "uris", required = false) List<String> uris,
             @RequestParam(name = "unique", defaultValue = "false") Boolean unique,
             @RequestParam(name = "from", defaultValue = "0") int from,
             @RequestParam(name = "size", defaultValue = "20") int size) {
