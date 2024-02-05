@@ -28,7 +28,7 @@ public class Request {
     Event event;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id")
-    User user;
+    User requester;
     @Enumerated(EnumType.STRING)
-    RequestStatus requestStatus;
+    RequestStatus status;
 }

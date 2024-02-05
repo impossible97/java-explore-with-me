@@ -1,6 +1,7 @@
 package ru.practicum.admin_api.user.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.admin_api.user.service.UserService;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(params = "/admin/users")
+@RequestMapping("admin/users")
 public class UserController {
 
     private final UserService userService;
@@ -24,11 +25,13 @@ public class UserController {
     }
 
     @PostMapping()
+    @ResponseStatus(value = HttpStatus.CREATED)
     UserDto createUser(@Validated @RequestBody UserDto userDto) {
         return userService.createUser(userDto);
     }
 
     @DeleteMapping("{userId}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
     void deleteUser(@PathVariable long userId) {
         userService.deleteUser(userId);
     }

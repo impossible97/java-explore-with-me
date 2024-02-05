@@ -13,7 +13,7 @@ public class RequestDto {
 
     long id;
     LocalDateTime created;
-    long eventId;
-    long requesterId;
-    RequestStatus requestStatus;
+    long event;
+    long requester;
+    RequestStatus status;
 }

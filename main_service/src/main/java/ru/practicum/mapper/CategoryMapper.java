@@ -18,7 +18,7 @@ public class CategoryMapper {
         CategoryDto categoryDto = new CategoryDto();
 
         categoryDto.setId(category.getId());
-        categoryDto.setName(categoryDto.getName());
+        categoryDto.setName(category.getName());
         return categoryDto;
     }
 }

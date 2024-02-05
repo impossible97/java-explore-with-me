@@ -3,6 +3,7 @@ package ru.practicum.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
 public class EndpointHitDto {
     String app;
     String uri;

@@ -9,7 +9,6 @@ import ru.practicum.admin_api.categories.model.Category;
 import ru.practicum.admin_api.user.model.User;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
@@ -23,14 +22,16 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String title;
+    @Column(length = 1000)
     String annotation;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
     int confirmedRequests;
-    LocalDateTime createdOn;
+    String createdOn;
+    @Column(length = 1000)
     String description;
-    LocalDateTime eventDate;
+    String eventDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User initiator;
@@ -41,9 +42,9 @@ public class Event {
     Map<Float, Float> location;
     boolean paid;
     int participantLimit;
-    LocalDateTime publishedOn;
+    String publishedOn;
     boolean requestModeration;
     @Enumerated(EnumType.STRING)
-    EventState eventState;
+    EventState state;
     int views;
 }

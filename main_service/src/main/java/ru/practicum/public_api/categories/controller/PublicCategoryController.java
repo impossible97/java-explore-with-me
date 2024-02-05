@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping(params = "/categories")
+@RequestMapping("categories")
 public class PublicCategoryController {
 
     private final PublicCategoryService publicCategoryService;
