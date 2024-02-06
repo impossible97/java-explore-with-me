@@ -1,10 +1,10 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.admin_api.user.model.User;
-import ru.practicum.private_api.event.model.Event;
-import ru.practicum.private_api.request.dto.RequestDto;
-import ru.practicum.private_api.request.model.Request;
+import ru.practicum.admin_api.users.model.User;
+import ru.practicum.private_api.events.model.Event;
+import ru.practicum.private_api.requests.dto.RequestDto;
+import ru.practicum.private_api.requests.model.Request;
 
 @Component
 public class RequestMapper {

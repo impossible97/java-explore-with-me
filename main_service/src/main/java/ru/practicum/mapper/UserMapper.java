@@ -1,8 +1,8 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.admin_api.user.dto.UserDto;
-import ru.practicum.admin_api.user.model.User;
+import ru.practicum.admin_api.users.dto.UserDto;
+import ru.practicum.admin_api.users.model.User;
 
 @Component
 public class UserMapper {
