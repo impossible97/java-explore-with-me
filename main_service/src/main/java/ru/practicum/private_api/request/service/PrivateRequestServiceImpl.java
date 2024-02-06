@@ -45,18 +45,16 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == event.getConfirmedRequests()) {
             throw new ConflictException("У события достигнут лимит запросов на участие");
         }
-
         RequestDto requestDto = new RequestDto();
 
-        if (!event.isRequestModeration()) {
+        if (!event.isRequestModeration() || event.getParticipantLimit() == 0) {
             requestDto.setStatus(RequestStatus.CONFIRMED);
         } else {
             requestDto.setStatus(RequestStatus.PENDING);
         }
-
         return requestMapper.toDto(requestRepository.save(requestMapper.toEntity(requestDto, event, user)));
     }
 

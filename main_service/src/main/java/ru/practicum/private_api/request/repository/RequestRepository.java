@@ -10,4 +10,8 @@ public interface RequestRepository extends PagingAndSortingRepository<Request, L
     boolean existsByEventIdAndRequesterId(long eventId, long userId);
 
     List<Request> findAllByRequesterId(long userId);
+
+    List<Request> findAllByEventId(long eventId);
+
+    List<Request> findAllByEventIdAndIdIn(long eventId, List<Long> ids);
 }

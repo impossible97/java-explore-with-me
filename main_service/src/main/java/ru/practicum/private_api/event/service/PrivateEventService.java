@@ -4,6 +4,7 @@ import ru.practicum.private_api.event.dto.EventDto;
 import ru.practicum.private_api.event.dto.NewEventDto;
 import ru.practicum.private_api.event.dto.ShortEventDto;
 import ru.practicum.private_api.request.dto.RequestDto;
+import ru.practicum.private_api.request.model.ChangeStatusRequestResult;
 import ru.practicum.private_api.request.model.ChangeStatusRequests;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +19,7 @@ public interface PrivateEventService {
 
     EventDto patchEventByUser(long userId, long eventId, NewEventDto eventDto);
 
-    List<EventDto> getRequests(long userId, long eventId);
+    List<RequestDto> getRequests(long userId, long eventId);
 
-    List<RequestDto> changeRequestStatus(long userId, long eventId, ChangeStatusRequests changeStatusRequests);
+    List<ChangeStatusRequestResult> changeRequestStatus(long userId, long eventId, ChangeStatusRequests changeStatusRequests);
 }

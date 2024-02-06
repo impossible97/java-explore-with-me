@@ -43,6 +43,7 @@ public class Event {
     boolean paid;
     int participantLimit;
     String publishedOn;
+    @Column(columnDefinition = "varchar(255) default 'true'")
     boolean requestModeration;
     @Enumerated(EnumType.STRING)
     EventState state;

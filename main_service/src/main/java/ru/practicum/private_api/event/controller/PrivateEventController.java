@@ -8,6 +8,7 @@ import ru.practicum.private_api.event.dto.NewEventDto;
 import ru.practicum.private_api.event.dto.ShortEventDto;
 import ru.practicum.private_api.event.service.PrivateEventService;
 import ru.practicum.private_api.request.dto.RequestDto;
+import ru.practicum.private_api.request.model.ChangeStatusRequestResult;
 import ru.practicum.private_api.request.model.ChangeStatusRequests;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,15 +51,15 @@ public class PrivateEventController {
     }
 
     @GetMapping("{eventId}/requests")
-    public List<EventDto> getRequests(@PathVariable(name = "userId") long userId,
+    public List<RequestDto> getRequests(@PathVariable(name = "userId") long userId,
                                       @PathVariable(name = "eventId") long eventId) {
         return privateEventService.getRequests(userId, eventId);
     }
 
     @PatchMapping("{eventId}/requests")
-    public List<RequestDto> changeRequestStatus(@PathVariable(name = "userId") long userId,
-                                                @PathVariable(name = "eventId") long eventId,
-                                                @RequestBody ChangeStatusRequests changeStatusRequests) {
+    public List<ChangeStatusRequestResult> changeRequestStatus(@PathVariable(name = "userId") long userId,
+                                                               @PathVariable(name = "eventId") long eventId,
+                                                               @RequestBody ChangeStatusRequests changeStatusRequests) {
         return privateEventService.changeRequestStatus(userId, eventId, changeStatusRequests);
     }
 }

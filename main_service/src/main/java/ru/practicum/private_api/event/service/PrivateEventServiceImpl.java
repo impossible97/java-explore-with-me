@@ -14,6 +14,7 @@ import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.mapper.EventMapper;
+import ru.practicum.mapper.RequestMapper;
 import ru.practicum.private_api.event.dto.EventDto;
 import ru.practicum.private_api.event.dto.NewEventDto;
 import ru.practicum.private_api.event.dto.ShortEventDto;
@@ -21,12 +22,15 @@ import ru.practicum.private_api.event.model.Event;
 import ru.practicum.private_api.event.model.EventState;
 import ru.practicum.private_api.event.repository.EventRepository;
 import ru.practicum.private_api.request.dto.RequestDto;
+import ru.practicum.private_api.request.model.ChangeStatusRequestResult;
 import ru.practicum.private_api.request.model.ChangeStatusRequests;
+import ru.practicum.private_api.request.model.RequestStatus;
 import ru.practicum.private_api.request.repository.RequestRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +46,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final BaseClient baseClient;
+    private final RequestMapper requestMapper;
 
     @Override
     public EventDto createEvent(long userId, NewEventDto newEventDto) {
@@ -64,11 +69,16 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
         hitStatistics(httpServletRequest);
 
+
         return eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size), Sort.by("eventDate").descending())
                 .stream()
-                .map(event -> eventMapper.toShortDto(event,
-                        categoryMapper.toDto(event.getCategory()),
-                        userRepository.findUserById(userId)))
+                .map(event -> {
+                    event.setViews(event.getViews() + 1);
+                    Event savedEvent = eventRepository.save(event);
+                    return eventMapper.toShortDto(savedEvent,
+                            categoryMapper.toDto(savedEvent.getCategory()),
+                            userRepository.findUserById(userId));
+                })
                 .collect(Collectors.toList());
     }
 
@@ -77,8 +87,10 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         Event event = validateEvent(userId, eventId);
 
         hitStatistics(httpServletRequest);
+        event.setViews(event.getViews() + 1);
+        Event savedEvent = eventRepository.save(event);
 
-        return eventMapper.toDto(event, categoryMapper.toDto(event.getCategory()), userRepository.findUserById(userId));
+        return eventMapper.toDto(savedEvent, categoryMapper.toDto(savedEvent.getCategory()), userRepository.findUserById(userId));
     }
 
     @Override
@@ -127,13 +139,52 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     @Override
-    public List<EventDto> getRequests(long userId, long eventId) {
-        return null;
+    public List<RequestDto> getRequests(long userId, long eventId) {
+        validateEvent(userId, eventId);
+
+        return requestRepository.findAllByEventId(eventId).stream()
+                .map(requestMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<RequestDto> changeRequestStatus(long userId, long eventId, ChangeStatusRequests changeStatusRequests) {
-        return null;
+    public List<ChangeStatusRequestResult> changeRequestStatus(long userId, long eventId, ChangeStatusRequests changeStatusRequests) {
+        Event event = validateEvent(userId, eventId);
+        if (event.getConfirmedRequests() == event.getParticipantLimit()) {
+            throw new ConflictException("У события достигнут лимит запросов на участие");
+        }
+
+        List<ChangeStatusRequestResult> result = new ArrayList<>();
+
+        List<RequestDto> requestDtos = requestRepository.findAllByEventIdAndIdIn(eventId, changeStatusRequests.getRequestIds()).stream()
+                .map(request -> {
+                    if (request.getStatus().equals(RequestStatus.PENDING)) { // Статус равен "Ожидание"
+                        if (event.getParticipantLimit() != 0 || !event.isRequestModeration()) {
+                            if (event.getConfirmedRequests() < event.getParticipantLimit()) { // Лимит не достигнут
+                                request.setStatus(changeStatusRequests.getStatus());
+                                event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                            } else {
+                                request.setStatus(RequestStatus.CANCELED);
+                            }
+                        } else {
+                            request.setStatus(RequestStatus.CONFIRMED);
+                            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+                        }
+                    } else {
+                        throw new ConflictException("Статус можно изменить только у заявок, находящихся в состоянии ожидания." +
+                                "У заявки с id = " + request.getId() + " статус " + request.getStatus() + ".");
+                    }
+                    requestRepository.save(request);
+                    if (request.getStatus().equals(RequestStatus.CONFIRMED)) {
+                        result.add()
+                    }
+                    return requestMapper.toDto(request);
+                })
+                .collect(Collectors.toList());
+
+        eventRepository.save(event);
+
+        return result;
     }
 
     private void hitStatistics(HttpServletRequest request) {
