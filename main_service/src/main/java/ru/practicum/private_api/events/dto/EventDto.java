@@ -1,6 +1,5 @@
 package ru.practicum.private_api.events.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +9,6 @@ import ru.practicum.private_api.events.model.EventState;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventDto {
 
     long id;
@@ -23,10 +21,10 @@ public class EventDto {
     String eventDate;
     UserShortDto initiator;
     Location location;
-    boolean paid;
+    Boolean paid;
     int participantLimit;
     String publishedOn;
-    boolean requestModeration;
+    Boolean requestModeration;
     EventState state;
     int views;
 }

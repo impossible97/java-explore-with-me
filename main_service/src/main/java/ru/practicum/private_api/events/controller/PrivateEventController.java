@@ -3,6 +3,7 @@ package ru.practicum.private_api.events.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.private_api.events.dto.EventDto;
 import ru.practicum.private_api.events.dto.NewEventDto;
 import ru.practicum.private_api.events.dto.ShortEventDto;
@@ -46,8 +47,8 @@ public class PrivateEventController {
     @PatchMapping("{eventId}")
     public EventDto patchEventByUser(@PathVariable(name = "userId") long userId,
                                      @PathVariable(name = "eventId") long eventId,
-                                     @RequestBody NewEventDto newEventDto) {
-        return privateEventService.patchEventByUser(userId, eventId, newEventDto);
+                                     @RequestBody UpdateEventDto updateEventDto) {
+        return privateEventService.patchEventByUser(userId, eventId, updateEventDto);
     }
 
     @GetMapping("{eventId}/requests")

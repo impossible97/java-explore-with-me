@@ -9,7 +9,7 @@ import ru.practicum.admin_api.compilations.service.AdminCompilationService;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("admin/compilation")
+@RequestMapping("admin/compilations")
 public class AdminCompilationController {
 
     private final AdminCompilationService adminCompilationService;
@@ -26,8 +26,8 @@ public class AdminCompilationController {
         adminCompilationService.deleteCompilation(compId);
     }
 
-    @PatchMapping("{comId}")
-    public CompilationDto patchCompilation(@PathVariable long comId, @RequestBody NewCompilationDto newCompilationDto) {
-        return adminCompilationService.patchCompilation(comId, newCompilationDto);
+    @PatchMapping("{compId}")
+    public CompilationDto patchCompilation(@PathVariable long compId, @RequestBody NewCompilationDto newCompilationDto) {
+        return adminCompilationService.patchCompilation(compId, newCompilationDto);
     }
 }

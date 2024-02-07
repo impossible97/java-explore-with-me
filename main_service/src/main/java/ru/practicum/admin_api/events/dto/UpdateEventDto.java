@@ -1,12 +1,13 @@
-package ru.practicum.private_api.events.dto;
+package ru.practicum.admin_api.events.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.private_api.events.dto.Location;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class NewEventDto {
+public class UpdateEventDto {
 
     long id;
     String title;
@@ -18,4 +19,5 @@ public class NewEventDto {
     Boolean paid;
     int participantLimit;
     Boolean requestModeration;
+    StateAction stateAction;
 }

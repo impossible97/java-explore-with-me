@@ -1,5 +1,6 @@
 package ru.practicum.private_api.events.service;
 
+import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.private_api.events.dto.EventDto;
 import ru.practicum.private_api.events.dto.NewEventDto;
 import ru.practicum.private_api.events.dto.ShortEventDto;
@@ -17,7 +18,7 @@ public interface PrivateEventService {
 
     EventDto getEventByUser(long userId, long eventId, HttpServletRequest httpServletRequest);
 
-    EventDto patchEventByUser(long userId, long eventId, NewEventDto eventDto);
+    EventDto patchEventByUser(long userId, long eventId, UpdateEventDto updateEventDto);
 
     List<RequestDto> getRequests(long userId, long eventId);
 

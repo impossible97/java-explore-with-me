@@ -24,6 +24,6 @@ public class Compilation {
     @OneToMany
     @JoinColumn(name = "event_id", unique = true)
     List<Event> events;
-    boolean pinned;
+    Boolean pinned;
     String title;
 }

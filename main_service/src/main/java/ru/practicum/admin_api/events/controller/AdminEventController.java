@@ -1,10 +1,8 @@
 package ru.practicum.admin_api.events.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.admin_api.events.service.AdminEventService;
 import ru.practicum.private_api.events.dto.EventDto;
 import ru.practicum.private_api.events.model.EventState;
@@ -27,5 +25,10 @@ public class AdminEventController {
                                        @RequestParam(value = "from", defaultValue = "0") int from,
                                        @RequestParam(value = "size", defaultValue = "10") int size) {
         return adminEventService.searchEvents(users, states, categories, rangeStart, rangeEnd, from, size);
+    }
+
+    @PatchMapping("{eventId}")
+    public EventDto editEventDate(@PathVariable long eventId, @RequestBody UpdateEventDto updateEventDto) {
+        return adminEventService.editEventDateAndState(eventId, updateEventDto);
     }
 }

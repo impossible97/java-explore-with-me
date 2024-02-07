@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("compilation")
+@RequestMapping("compilations")
 public class PublicCompilationController {
 
     private final PublicCompilationService publicCompilationService;

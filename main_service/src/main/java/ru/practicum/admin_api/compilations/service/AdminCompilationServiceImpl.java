@@ -62,8 +62,8 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
         if (!compilation.getTitle().equals(newCompilationDto.getTitle())) {
             compilation.setTitle(newCompilationDto.getTitle());
         }
-        if (compilation.isPinned() != newCompilationDto.isPinned()) {
-            compilation.setPinned(newCompilationDto.isPinned());
+        if (compilation.getPinned() != newCompilationDto.getPinned()) {
+            compilation.setPinned(newCompilationDto.getPinned());
         }
         Compilation savedCompilation = compilationRepository.save(compilation);
         List<ShortEventDto> shortEventDtos = newEvents.stream()

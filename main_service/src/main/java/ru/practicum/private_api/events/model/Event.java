@@ -41,11 +41,11 @@ public class Event {
     @MapKeyColumn(name = "lat") // Широта
     @Column(name = "lon") // Долгота
     Map<Float, Float> location;
-    boolean paid;
+    Boolean paid;
     int participantLimit;
     LocalDateTime publishedOn;
     @Column(columnDefinition = "varchar(255) default 'true'")
-    boolean requestModeration;
+    Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     EventState state;
     int views;

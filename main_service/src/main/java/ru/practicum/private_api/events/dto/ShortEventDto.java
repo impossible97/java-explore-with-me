@@ -17,6 +17,6 @@ public class ShortEventDto {
     int confirmedRequests;
     String eventDate;
     UserShortDto initiator;
-    boolean paid;
+    Boolean paid;
     int views;
 }

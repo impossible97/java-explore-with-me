@@ -29,7 +29,7 @@ public class PublicCompilationServiceImpl implements PublicCompilationService{
     @Override
     public List<CompilationDto> getCompilations(boolean pinned, int from, int size) {
         return compilationRepository.findAllByPinned(pinned, PageRequest.of(from / size, size)).stream()
-                .filter(compilation -> compilation.isPinned() == pinned)
+                .filter(compilation -> compilation.getPinned() == pinned)
                 .map(compilation -> compilationMapper.toDto(compilation, compilation.getEvents().stream()
                             .map(event ->
                                     eventMapper.toShortDto(event,

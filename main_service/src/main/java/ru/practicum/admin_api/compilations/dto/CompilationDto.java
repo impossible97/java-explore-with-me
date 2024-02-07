@@ -13,6 +13,6 @@ public class CompilationDto {
 
     long id;
     List<ShortEventDto> events;
-    boolean pinned;
+    Boolean pinned;
     String title;
 }
