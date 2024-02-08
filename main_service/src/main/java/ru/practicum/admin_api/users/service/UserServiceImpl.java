@@ -3,6 +3,8 @@ package ru.practicum.admin_api.users.service;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.admin_api.users.dto.NewUserDto;
 import ru.practicum.admin_api.users.dto.UserDto;
 import ru.practicum.admin_api.users.repository.UserRepository;
 import ru.practicum.exception.NotFoundException;
@@ -18,19 +20,29 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getUsers(List<Long> ids, int from, int size) {
-        return userRepository.findAllByIdInOrderById(ids, PageRequest.of(from / size, size))
-                .stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
+        if (ids != null) {
+            return userRepository.findAllByIdInOrderById(ids, PageRequest.of(from / size, size))
+                    .stream()
+                    .map(userMapper::toDto)
+                    .collect(Collectors.toList());
+        } else {
+            return userRepository.findAll(PageRequest.of(from / size, size))
+                    .stream()
+                    .map(userMapper::toDto)
+                    .collect(Collectors.toList());
+        }
     }
 
+    @Transactional
     @Override
-    public UserDto createUser(UserDto userDto) {
+    public UserDto createUser(NewUserDto userDto) {
         return userMapper.toDto(userRepository.save(userMapper.toEntity(userDto)));
     }
 
+    @Transactional
     @Override
     public void deleteUser(long userId) {
         userRepository.delete(userRepository.findById(userId).orElseThrow(() ->

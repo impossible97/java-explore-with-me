@@ -3,6 +3,7 @@ package ru.practicum.public_api.compilations.service;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.admin_api.compilations.dto.CompilationDto;
 import ru.practicum.admin_api.compilations.model.Compilation;
 import ru.practicum.admin_api.compilations.repository.CompilationRepository;
@@ -26,19 +27,31 @@ public class PublicCompilationServiceImpl implements PublicCompilationService{
     private final CategoryMapper categoryMapper;
     private final UserRepository userRepository;
 
+    @Transactional(readOnly = true)
     @Override
-    public List<CompilationDto> getCompilations(boolean pinned, int from, int size) {
-        return compilationRepository.findAllByPinned(pinned, PageRequest.of(from / size, size)).stream()
-                .filter(compilation -> compilation.getPinned() == pinned)
-                .map(compilation -> compilationMapper.toDto(compilation, compilation.getEvents().stream()
+    public List<CompilationDto> getCompilations(Boolean pinned, int from, int size) {
+        if (pinned != null) {
+            return compilationRepository.findAllByPinned(pinned, PageRequest.of(from / size, size)).stream()
+                    .map(compilation -> compilationMapper.toDto(compilation, compilation.getEvents().stream()
                             .map(event ->
                                     eventMapper.toShortDto(event,
                                             categoryMapper.toDto(event.getCategory()),
                                             userRepository.findUserById(event.getInitiator().getId())))
                             .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+                    .collect(Collectors.toList());
+        } else {
+            return compilationRepository.findAll(PageRequest.of(from / size, size)).stream()
+                    .map(compilation -> compilationMapper.toDto(compilation, compilation.getEvents().stream()
+                            .map(event ->
+                                    eventMapper.toShortDto(event,
+                                            categoryMapper.toDto(event.getCategory()),
+                                            userRepository.findUserById(event.getInitiator().getId())))
+                            .collect(Collectors.toList())))
+                    .collect(Collectors.toList());
+        }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CompilationDto getCompilationById(long compId) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->

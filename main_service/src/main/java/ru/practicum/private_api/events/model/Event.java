@@ -9,6 +9,7 @@ import ru.practicum.admin_api.categories.model.Category;
 import ru.practicum.admin_api.users.model.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.Future;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -22,16 +23,18 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
+    @Column(length = 120)
     String title;
-    @Column(length = 1000)
+    @Column(length = 2000)
     String annotation;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
     int confirmedRequests;
     LocalDateTime createdOn;
-    @Column(length = 1000)
+    @Column(length = 7000)
     String description;
+    @Future
     LocalDateTime eventDate;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -44,7 +47,6 @@ public class Event {
     Boolean paid;
     int participantLimit;
     LocalDateTime publishedOn;
-    @Column(columnDefinition = "varchar(255) default 'true'")
     Boolean requestModeration;
     @Enumerated(EnumType.STRING)
     EventState state;

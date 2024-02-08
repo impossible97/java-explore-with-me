@@ -5,11 +5,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.admin_api.categories.repository.CategoryRepository;
-import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.admin_api.events.dto.StateAction;
+import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.admin_api.users.repository.UserRepository;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.private_api.events.dto.EventDto;
@@ -19,6 +20,7 @@ import ru.practicum.private_api.events.repository.EventRepository;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,17 +43,32 @@ public class AdminEventServiceImpl implements AdminEventService {
     public List<EventDto> searchEvents(
             List<Long> users, List<EventState> states, List<Long> categories, String rangeStart, String rangeEnd, int from, int size) {
 
-        LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
-        LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
+        List<Event> events;
 
-        List<Event> events = eventRepository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
-                users, states, categories, start, end, PageRequest.of(from / size, size)
-        );
+        if (users != null && states != null && categories != null && rangeStart != null && rangeEnd != null) {
+            LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
+            LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
 
+            events =  eventRepository.findAllByInitiatorIdInAndStateInAndCategoryIdInAndEventDateAfterAndEventDateBefore(
+                    users, states, categories, start, end, PageRequest.of(from / size, size)
+            );
+        } else {
+            if (users != null && states != null && categories != null) {
+                events = eventRepository.findAllByInitiatorIdInAndStateInAndCategoryIdIn(
+                        users, states, categories, PageRequest.of(from / size, size)
+                );
+            } else if (users != null && states != null) {
+                events = eventRepository.findAllByInitiatorIdInAndStateIn(users, states, PageRequest.of(from / size, size));
+            } else if (users != null) {
+                events = eventRepository.findAllByInitiatorIdIn(users, PageRequest.of(from / size, size));
+            } else {
+                events = eventRepository.findAll(PageRequest.of(from / size, size)).toList();
+            }
+        }
         return events.stream().map(event ->
                         eventMapper.toDto(event,
-                                          categoryMapper.toDto(event.getCategory()),
-                                          userRepository.findUserById(event.getInitiator().getId())))
+                                categoryMapper.toDto(event.getCategory()),
+                                userRepository.findUserById(event.getInitiator().getId())))
                 .collect(Collectors.toList());
     }
 
@@ -83,7 +100,15 @@ public class AdminEventServiceImpl implements AdminEventService {
             event.setDescription(updateEventDto.getDescription());
         }
         if (updateEventDto.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(updateEventDto.getEventDate(), formatter));
+            try {
+                LocalDateTime time = LocalDateTime.parse(updateEventDto.getEventDate(), formatter);
+                if (time.isBefore(LocalDateTime.now())) {
+                    throw new ValidationException("Новая дата собития не может быть в прошлом");
+                }
+                event.setEventDate(time);
+            } catch (DateTimeParseException e) {
+                throw new ValidationException("Неверный формат даты и времени");
+            }
         }
         if (updateEventDto.getLocation() != null) {
             Map<Float, Float> newLocation = new HashMap<>();
@@ -99,11 +124,13 @@ public class AdminEventServiceImpl implements AdminEventService {
         if (updateEventDto.getRequestModeration() != null) {
             event.setRequestModeration(updateEventDto.getRequestModeration());
         }
-        if (updateEventDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
-            event.setPublishedOn(LocalDateTime.now());
-            event.setState(EventState.PUBLISHED);
-        } else {
-            event.setState(EventState.CANCELED);
+        if (updateEventDto.getStateAction() != null) {
+            if (updateEventDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
+                event.setPublishedOn(LocalDateTime.now());
+                event.setState(EventState.PUBLISHED);
+            } else {
+                event.setState(EventState.CANCELED);
+            }
         }
         Event updatedEvent = eventRepository.save(event);
 

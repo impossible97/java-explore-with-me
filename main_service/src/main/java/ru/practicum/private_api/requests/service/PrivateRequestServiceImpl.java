@@ -2,6 +2,7 @@ package ru.practicum.private_api.requests.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.admin_api.users.model.User;
 import ru.practicum.admin_api.users.repository.UserRepository;
 import ru.practicum.exception.ConflictException;
@@ -28,6 +29,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
     private final RequestMapper requestMapper;
 
 
+    @Transactional
     @Override
     public RequestDto createRequest(long userId, long eventId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
@@ -45,7 +47,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         if (!event.getState().equals(EventState.PUBLISHED)) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии");
         }
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() == event.getConfirmedRequests()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
             throw new ConflictException("У события достигнут лимит запросов на участие");
         }
         RequestDto requestDto = new RequestDto();
@@ -58,6 +60,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
         return requestMapper.toDto(requestRepository.save(requestMapper.toEntity(requestDto, event, user)));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<RequestDto> getUserRequests(long userId) {
         userRepository.findById(userId).orElseThrow(() ->
@@ -68,6 +71,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public RequestDto cancelRequest(long userId, long requestId) {
         userRepository.findById(userId).orElseThrow(() ->

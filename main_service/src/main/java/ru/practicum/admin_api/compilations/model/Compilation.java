@@ -21,7 +21,7 @@ public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    @OneToMany
+    @ManyToMany
     @JoinColumn(name = "event_id", unique = true)
     List<Event> events;
     Boolean pinned;

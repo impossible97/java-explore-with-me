@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface PublicEventService {
     List<ShortEventDto> getEventsWithDescription(
-            String text, List<Long> categories, boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, boolean onlyAvailable,
+            String text, List<Long> categories, Boolean paid, LocalDateTime rangeStart, LocalDateTime rangeEnd, boolean onlyAvailable,
             String sort, int from, int size, HttpServletRequest request);
 
     EventDto getEventById(long eventId, HttpServletRequest request);

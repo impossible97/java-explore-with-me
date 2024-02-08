@@ -1,8 +1,9 @@
-package ru.practicum.private_api.requests.model;
+package ru.practicum.private_api.requests.dto;
 
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.private_api.requests.model.RequestStatus;
 
 import java.util.List;
 

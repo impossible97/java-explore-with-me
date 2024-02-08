@@ -2,8 +2,10 @@ package ru.practicum.admin_api.compilations.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.admin_api.compilations.dto.CompilationDto;
 import ru.practicum.admin_api.compilations.dto.NewCompilationDto;
+import ru.practicum.admin_api.compilations.dto.UpdatedCompilationDto;
 import ru.practicum.admin_api.compilations.model.Compilation;
 import ru.practicum.admin_api.compilations.repository.CompilationRepository;
 import ru.practicum.admin_api.users.repository.UserRepository;
@@ -15,6 +17,7 @@ import ru.practicum.private_api.events.dto.ShortEventDto;
 import ru.practicum.private_api.events.model.Event;
 import ru.practicum.private_api.events.repository.EventRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +32,12 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
     private final CompilationMapper compilationMapper;
     private final CategoryMapper categoryMapper;
 
+    @Transactional
     @Override
     public CompilationDto createCompilation(NewCompilationDto newCompilationDto) {
+        if (newCompilationDto.getEvents() == null) {
+            newCompilationDto.setEvents(new HashSet<>());
+        }
         List<Event> events = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
         List<ShortEventDto> shortEventDtos = events.stream()
                 .map(event ->
@@ -39,34 +46,44 @@ public class AdminCompilationServiceImpl implements AdminCompilationService {
                                 userRepository.findUserById(event.getInitiator().getId())))
                 .collect(Collectors.toList());
 
+        if (newCompilationDto.getPinned() == null) {
+            newCompilationDto.setPinned(false);
+        }
         return compilationMapper.toDto(
                 compilationRepository.save(compilationMapper.toEntity(newCompilationDto, events)), shortEventDtos);
     }
 
+    @Transactional
     @Override
     public void deleteCompilation(long compId) {
         compilationRepository.delete(compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Подборки событий с таким id = " + compId + " не существует")));
     }
 
+    @Transactional
     @Override
-    public CompilationDto patchCompilation(long compId, NewCompilationDto newCompilationDto) {
+    public CompilationDto patchCompilation(long compId, UpdatedCompilationDto updatedCompilationDto) {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("Подборки событий с таким id = " + compId + " не существует"));
 
-        List<Event> newEvents = eventRepository.findAllByIdIn(newCompilationDto.getEvents());
+        List<Event> events;
 
-        if (compilation.getEvents() != newEvents) {
-            compilation.setEvents(newEvents);
+        if (updatedCompilationDto.getEvents() != null) {
+            events = eventRepository.findAllByIdIn(updatedCompilationDto.getEvents());
+            compilation.setEvents(events);
+        } else {
+            events = compilation.getEvents();
         }
-        if (!compilation.getTitle().equals(newCompilationDto.getTitle())) {
-            compilation.setTitle(newCompilationDto.getTitle());
+        if (updatedCompilationDto.getTitle() != null) {
+            compilation.setTitle(updatedCompilationDto.getTitle());
         }
-        if (compilation.getPinned() != newCompilationDto.getPinned()) {
-            compilation.setPinned(newCompilationDto.getPinned());
+        if (updatedCompilationDto.getPinned() != null) {
+            compilation.setPinned(updatedCompilationDto.getPinned());
         }
+
         Compilation savedCompilation = compilationRepository.save(compilation);
-        List<ShortEventDto> shortEventDtos = newEvents.stream()
+
+        List<ShortEventDto> shortEventDtos = events.stream()
                 .map(event ->
                         eventMapper.toShortDto(event,
                                 categoryMapper.toDto(event.getCategory()),
