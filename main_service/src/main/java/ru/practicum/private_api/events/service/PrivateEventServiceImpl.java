@@ -28,7 +28,6 @@ import ru.practicum.private_api.requests.dto.ChangeStatusRequests;
 import ru.practicum.private_api.requests.dto.RequestDto;
 import ru.practicum.private_api.requests.model.RequestStatus;
 import ru.practicum.private_api.requests.repository.RequestRepository;
-import ru.practicum.stats.Stats;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
