@@ -30,7 +30,6 @@ import ru.practicum.private_api.requests.model.RequestStatus;
 import ru.practicum.private_api.requests.repository.RequestRepository;
 import ru.practicum.stats.Stats;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -50,7 +49,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final RequestMapper requestMapper;
-    private final Stats stats;
 
     @Transactional
     @Override

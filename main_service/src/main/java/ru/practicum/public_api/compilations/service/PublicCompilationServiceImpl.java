@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class PublicCompilationServiceImpl implements PublicCompilationService{
+public class PublicCompilationServiceImpl implements PublicCompilationService {
 
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;

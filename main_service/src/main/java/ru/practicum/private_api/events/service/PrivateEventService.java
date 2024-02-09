@@ -4,11 +4,10 @@ import ru.practicum.admin_api.events.dto.UpdateEventDto;
 import ru.practicum.private_api.events.dto.EventDto;
 import ru.practicum.private_api.events.dto.NewEventDto;
 import ru.practicum.private_api.events.dto.ShortEventDto;
-import ru.practicum.private_api.requests.dto.RequestDto;
 import ru.practicum.private_api.requests.dto.ChangeStatusRequestResult;
 import ru.practicum.private_api.requests.dto.ChangeStatusRequests;
+import ru.practicum.private_api.requests.dto.RequestDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface PrivateEventService {
