@@ -13,7 +13,6 @@ import ru.practicum.private_api.requests.dto.ChangeStatusRequestResult;
 import ru.practicum.private_api.requests.dto.ChangeStatusRequests;
 import ru.practicum.private_api.requests.dto.RequestDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController

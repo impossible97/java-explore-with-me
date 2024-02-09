@@ -54,6 +54,7 @@ public class PrivateRequestServiceImpl implements PrivateRequestService {
 
         if (event.getParticipantLimit() == 0 || !event.getRequestModeration()) {
             requestDto.setStatus(RequestStatus.CONFIRMED);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
         } else {
             requestDto.setStatus(RequestStatus.PENDING);
         }

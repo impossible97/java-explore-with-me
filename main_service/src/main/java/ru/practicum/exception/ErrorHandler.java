@@ -1,28 +1,64 @@
 package ru.practicum.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidation(final ValidationException e) {
-        return new ErrorResponse("Ошибка валидации", e.getMessage());
+    public ResponseEntity<ApiError> handleValidationException(final ValidationException e) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage("Сведения об ошибке");
+        apiError.setReason(e.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST);
+        List<String> errors = new ArrayList<>();
+        Arrays.stream(e.getStackTrace()).map(stackTraceElement -> errors.add(stackTraceElement.getClassName())).collect(Collectors.toList());
+        apiError.setErrors(errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(final NotFoundException e) {
-        return new ErrorResponse("Объект не найден", e.getMessage());
+    public ResponseEntity<ApiError> handleNotFoundException(final NotFoundException e) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage("Сведения об ошибке");
+        apiError.setReason(e.getMessage());
+        apiError.setStatus(HttpStatus.NOT_FOUND);
+        List<String> errors = new ArrayList<>();
+        Arrays.stream(e.getStackTrace()).map(stackTraceElement -> errors.add(stackTraceElement.getClassName())).collect(Collectors.toList());
+        apiError.setErrors(errors);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiError);
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleConflict(final ConflictException e) {
-        return new ErrorResponse("Нарушение целостности данных", e.getMessage());
+    public ResponseEntity<ApiError> handleConflictException(final ConflictException e) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage("Сведения об ошибке");
+        apiError.setReason(e.getMessage());
+        apiError.setStatus(HttpStatus.CONFLICT);
+        List<String> errors = new ArrayList<>();
+        Arrays.stream(e.getStackTrace()).map(stackTraceElement -> errors.add(stackTraceElement.getClassName())).collect(Collectors.toList());
+        apiError.setErrors(errors);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
+        ApiError apiError = new ApiError();
+        apiError.setMessage("Сведения об ошибке");
+        apiError.setReason(e.getCause().getMessage());
+        apiError.setStatus(HttpStatus.CONFLICT);
+        List<String> errors = new ArrayList<>();
+        Arrays.stream(e.getStackTrace()).map(stackTraceElement -> errors.add(stackTraceElement.getClassName())).collect(Collectors.toList());
+        apiError.setErrors(errors);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiError);
     }
 }

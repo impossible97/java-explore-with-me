@@ -20,6 +20,6 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     String name;
-    @Column(name = "email", length = 512)
+    @Column(name = "email", length = 512,unique = true)
     String email;
 }

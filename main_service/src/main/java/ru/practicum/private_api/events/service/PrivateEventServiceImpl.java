@@ -183,7 +183,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     @Override
     public ChangeStatusRequestResult changeRequestStatus(long userId, long eventId, ChangeStatusRequests changeStatusRequests) {
         Event event = validateEvent(userId, eventId);
-        if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit() <= event.getConfirmedRequests()) {
             throw new ConflictException("У события достигнут лимит запросов на участие");
         }
         List<RequestDto> requestDtos = requestRepository.findAllByEventIdAndIdIn(eventId, changeStatusRequests.getRequestIds()).stream()
