@@ -1,46 +1,51 @@
 version: '3.8'
 
 services:
-  stats_service:
-    build:
-      context: ./stats_service/stats-server
-      dockerfile: ./Dockerfile
-    ports:
-      - "9090:9090"
-    depends_on:
-      - db
-    environment:
-      SERVER_PORT: 9090
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/exploreWithMe
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_JPA_DATABASE: postgresql
-      SPRING_DATASOURCE_UNDERCLASSMEN: org.postgresql.Driver
-
-  db:
-    image: postgres:14-alpine
-    container_name: exploreWithMe-db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: exploreWithMe
-  main_service:
+  ewm-service:
     build:
       context: ./main_service
       dockerfile: ./Dockerfile
+    container_name: ewm-service
     ports:
       - "8080:8080"
     depends_on:
-      - db
-      - stats_service
+      - main-db
     environment:
-      - STATS_SERVICE_URL=http://localhost:9090
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/exploreWithMe
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/ewm_main_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
-      - SPRING_JPA_DATABASE=postgresql
-      - SPRING_DATASOURCE_UNDERCLASSMEN=org.postgresql.Driver
+
+  stats_service:
+    build:
+      context: ./stats_service
+      dockerfile: ./Dockerfile
+    container_name: stats-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats_db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm_stats_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
+  stats_db:
+    image: postgres:15.3-alpine
+    container_name: stats-db
+    ports:
+      - "6541:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ewm_stats_db
+
+  main-db:
+    image: postgres:15.3-alpine
+    container_name: main-db
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=ewm_main_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
