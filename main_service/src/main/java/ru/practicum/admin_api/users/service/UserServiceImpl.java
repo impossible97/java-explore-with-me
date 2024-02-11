@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.admin_api.users.dto.NewUserDto;
 import ru.practicum.admin_api.users.dto.UserDto;
 import ru.practicum.admin_api.users.repository.UserRepository;
 import ru.practicum.exception.NotFoundException;
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto createUser(NewUserDto userDto) {
+    public UserDto createUser(UserDto userDto) {
         return userMapper.toDto(userRepository.save(userMapper.toEntity(userDto)));
     }
 

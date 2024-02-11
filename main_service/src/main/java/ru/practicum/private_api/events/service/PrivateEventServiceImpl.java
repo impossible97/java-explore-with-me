@@ -114,7 +114,6 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (event.getState().equals(EventState.PUBLISHED)) {
              throw new ConflictException("Опубликованное событие не может быть изменено");
         }
-
         if (LocalDateTime.now().plusHours(2).isAfter(event.getEventDate())) {
             throw new ConflictException("Событие не может быть изменено менее чем за два часа до начала");
         }

@@ -8,6 +8,8 @@ import ru.practicum.private_api.events.dto.ShortEventDto;
 import ru.practicum.public_api.events.service.PublicEventService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,8 +29,8 @@ public class PublicEventController {
             @RequestParam(name = "rangeEnd", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
             @RequestParam(name = "onlyAvailable", defaultValue = "false") boolean onlyAvailable,
             @RequestParam(name = "sort", defaultValue = "EVENT_DATE") String sort,
-            @RequestParam(name = "from", defaultValue = "0") int from,
-            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero int from,
+            @RequestParam(name = "size", defaultValue = "10") @Positive int size,
             HttpServletRequest request) {
 
         return publicEventService.getEventsWithDescription(

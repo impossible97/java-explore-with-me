@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.admin_api.categories.dto.CategoryDto;
-import ru.practicum.admin_api.categories.dto.NewCategoryDto;
 import ru.practicum.admin_api.categories.model.Category;
 import ru.practicum.admin_api.categories.repository.CategoryRepository;
 import ru.practicum.exception.NotFoundException;
@@ -19,7 +18,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional
     @Override
-    public CategoryDto createCategory(NewCategoryDto categoryDto) {
+    public CategoryDto createCategory(CategoryDto categoryDto) {
         return categoryMapper.toDto(categoryRepository.save(categoryMapper.toEntity(categoryDto)));
     }
 
@@ -32,7 +31,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
 
     @Transactional
     @Override
-    public CategoryDto patchCategory(long catId, NewCategoryDto categoryDto) {
+    public CategoryDto patchCategory(long catId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(catId).orElseThrow(() ->
                 new NotFoundException("Категория с таким catId = " + catId + " не найдена"));
         if (categoryDto.getName() != null) {

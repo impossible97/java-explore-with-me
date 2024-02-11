@@ -1,14 +1,13 @@
 package ru.practicum.mapper;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.admin_api.users.dto.NewUserDto;
 import ru.practicum.admin_api.users.dto.UserDto;
 import ru.practicum.admin_api.users.model.User;
 
 @Component
 public class UserMapper {
 
-    public User toEntity(NewUserDto userDto) {
+    public User toEntity(UserDto userDto) {
         User user = new User();
 
         user.setName(userDto.getName());

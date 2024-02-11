@@ -2,11 +2,11 @@ package ru.practicum.admin_api.categories.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.admin_api.categories.dto.CategoryDto;
-import ru.practicum.admin_api.categories.dto.NewCategoryDto;
 import ru.practicum.admin_api.categories.service.AdminCategoryService;
+
+import javax.validation.Valid;
 
 @RestController
 @AllArgsConstructor
@@ -17,7 +17,7 @@ public class AdminCategoryController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CategoryDto createCategory(@Validated @RequestBody NewCategoryDto categoryDto) {
+    public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
         return adminCategoryService.createCategory(categoryDto);
     }
 
@@ -28,7 +28,7 @@ public class AdminCategoryController {
     }
 
     @PatchMapping("{catId}")
-    public CategoryDto patchCategory(@PathVariable long catId, @Validated @RequestBody NewCategoryDto categoryDto) {
+    public CategoryDto patchCategory(@PathVariable long catId, @Valid @RequestBody CategoryDto categoryDto) {
         return adminCategoryService.patchCategory(catId, categoryDto);
     }
 }

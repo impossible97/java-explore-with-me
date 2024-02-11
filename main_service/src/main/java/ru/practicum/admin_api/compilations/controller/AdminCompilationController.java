@@ -2,12 +2,13 @@ package ru.practicum.admin_api.compilations.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.admin_api.compilations.dto.CompilationDto;
 import ru.practicum.admin_api.compilations.dto.NewCompilationDto;
 import ru.practicum.admin_api.compilations.dto.UpdatedCompilationDto;
 import ru.practicum.admin_api.compilations.service.AdminCompilationService;
+
+import javax.validation.Valid;
 
 @RestController
 @AllArgsConstructor
@@ -18,7 +19,7 @@ public class AdminCompilationController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CompilationDto createCompilation(@Validated @RequestBody NewCompilationDto newCompilationDto) {
+    public CompilationDto createCompilation(@Valid @RequestBody NewCompilationDto newCompilationDto) {
         return adminCompilationService.createCompilation(newCompilationDto);
     }
 
@@ -29,7 +30,7 @@ public class AdminCompilationController {
     }
 
     @PatchMapping("{compId}")
-    public CompilationDto patchCompilation(@PathVariable long compId, @Validated @RequestBody UpdatedCompilationDto newCompilationDto) {
+    public CompilationDto patchCompilation(@PathVariable long compId, @Valid @RequestBody UpdatedCompilationDto newCompilationDto) {
         return adminCompilationService.patchCompilation(compId, newCompilationDto);
     }
 }
