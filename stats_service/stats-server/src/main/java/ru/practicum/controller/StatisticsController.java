@@ -1,6 +1,7 @@
 package ru.practicum.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @Validated
+@Slf4j
 public class StatisticsController {
 
     private final StatisticsService statisticsService;

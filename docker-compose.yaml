@@ -14,9 +14,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/ewm_main_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - STATS_SERVER_URL=http://stats_service:9090
+      - STATS_SERVER_URL=http://stats-service:9090
 
-  stats_service:
+  stats-service:
     build:
       context: ./stats_service
       dockerfile: ./Dockerfile
@@ -24,13 +24,13 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-      - stats_db
+      - stats-db
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm_stats_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
 
-  stats_db:
+  stats-db:
     image: postgres:15.3-alpine
     container_name: stats-db
     ports:
