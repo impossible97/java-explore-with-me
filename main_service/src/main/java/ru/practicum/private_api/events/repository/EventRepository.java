@@ -34,7 +34,7 @@ public interface EventRepository extends PagingAndSortingRepository<Event, Long>
             String textForDescription, String textForAnnotation, List<Long> categories, EventState state, Pageable pageable
     );
 
-    List<Event> findAllByCategoryIdInAndState(List<Long> categories, EventState state, Pageable pageable);
+    List<Event> findAllByAndState(EventState state, Pageable pageable);
 
     Optional<Event> findByIdAndState(long id, EventState state);
 

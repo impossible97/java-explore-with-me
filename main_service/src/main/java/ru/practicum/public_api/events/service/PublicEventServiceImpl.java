@@ -46,11 +46,11 @@ public class PublicEventServiceImpl implements PublicEventService {
         } else {
             sortBy = Sort.by("views").descending();
         }
-        if (categories.contains(0L)) {
-            throw new ValidationException("Категории не могут быть с id = 0");
+        if (categories != null && (categories.contains(0L))) {
+                throw new ValidationException("Категории не могут быть с id = 0");
         }
 
-        if (text != null && paid != null && rangeStart != null && rangeEnd != null) {
+        if (text != null && paid != null && rangeStart != null && rangeEnd != null && categories != null) {
             events = eventRepository.findAllByDescriptionIsLikeIgnoreCaseOrAnnotationIsLikeIgnoreCaseAndCategoryIdInAndPaidAndEventDateAfterAndEventDateBeforeAndState(
                     text,
                     text,
@@ -62,7 +62,7 @@ public class PublicEventServiceImpl implements PublicEventService {
                     PageRequest.of(from / size, size, sortBy)
             );
         } else {
-            if (text != null && paid != null) {
+            if (text != null && paid != null && categories != null) {
                 events = eventRepository.findAllByDescriptionIsLikeIgnoreCaseOrAnnotationIsLikeIgnoreCaseAndCategoryIdInAndPaidAndEventDateAfterAndState(
                         text,
                         text,
@@ -72,13 +72,13 @@ public class PublicEventServiceImpl implements PublicEventService {
                         EventState.PUBLISHED,
                         PageRequest.of(from / size, size, sortBy)
                 );
-            } else if (text != null) {
+            } else if (text != null && categories != null) {
                 events = eventRepository.findAllByDescriptionIsLikeIgnoreCaseOrAnnotationIsLikeIgnoreCaseAndCategoryIdInAndState(
                         text, text, categories, EventState.PUBLISHED, PageRequest.of(from / size, size, sortBy)
                 );
             } else {
-                events = eventRepository.findAllByCategoryIdInAndState(
-                        categories, EventState.PUBLISHED, PageRequest.of(from / size, size, sortBy));
+                events = eventRepository.findAllByAndState(
+                        EventState.PUBLISHED, PageRequest.of(from / size, size, sortBy));
             }
         }
         stats.hitStatistics(request);

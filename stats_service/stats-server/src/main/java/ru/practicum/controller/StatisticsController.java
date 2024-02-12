@@ -11,7 +11,6 @@ import ru.practicum.service.StatisticsService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -27,7 +26,7 @@ public class StatisticsController {
     }
 
     @GetMapping("/stats")
-    public Set<ViewStats> getStats(
+    public List<ViewStats> getStats(
             @RequestParam(name = "start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
             @RequestParam(name = "end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
             @RequestParam(name = "uris", required = false) List<String> uris,
