@@ -79,7 +79,9 @@ public class AdminEventServiceImpl implements AdminEventService {
         Event event = eventRepository.findById(eventId).orElseThrow(() ->
                 new NotFoundException("Собития с таким id = " + eventId + " не найдено"));
 
-
+        if (event.getState().equals(EventState.PUBLISHED)) {
+            throw new ConflictException("Опубликованное собитие нельзя изменить");
+        }
         if (!event.getState().equals(EventState.PENDING)) {
             throw new ConflictException("Событие можно публиковать, только если оно в состоянии ожидания публикации");
         }

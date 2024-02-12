@@ -1,6 +1,7 @@
 package ru.practicum.exception;
 
-import org.springframework.dao.DataIntegrityViolationException;
+import lombok.extern.slf4j.Slf4j;
+import org.postgresql.util.PSQLException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,10 +13,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<ApiError> handleValidationException(final ValidationException e) {
+        log.error("Возникла ошибка", e);
         ApiError apiError = new ApiError();
         apiError.setMessage("Сведения об ошибке");
         apiError.setReason(e.getMessage());
@@ -40,6 +43,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     public ResponseEntity<ApiError> handleConflictException(final ConflictException e) {
+        log.error("Возникла ошибка", e);
         ApiError apiError = new ApiError();
         apiError.setMessage("Сведения об ошибке");
         apiError.setReason(e.getMessage());
@@ -51,10 +55,11 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ApiError> handleDataIntegrityViolationException(final DataIntegrityViolationException e) {
+    public ResponseEntity<ApiError> handleDataIntegrityViolationException(final PSQLException e) {
+        log.error("Возникла ошибка", e);
         ApiError apiError = new ApiError();
         apiError.setMessage("Сведения об ошибке");
-        apiError.setReason(e.getCause().getMessage());
+        apiError.setReason(e.getMessage());
         apiError.setStatus(HttpStatus.CONFLICT);
         List<String> errors = new ArrayList<>();
         Arrays.stream(e.getStackTrace()).map(stackTraceElement -> errors.add(stackTraceElement.getClassName())).collect(Collectors.toList());
