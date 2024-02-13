@@ -1,6 +1,7 @@
 package ru.practicum.client;
 
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
@@ -15,16 +16,18 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@AllArgsConstructor
+@Slf4j
 public class BaseClient {
 
-    @Value("${stats-server.url}")
-    private String statsServerUri;
+    private final RestTemplate rest;
 
-    private final RestTemplate rest = new RestTemplateBuilder()
-            .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUri))
-            .requestFactory(HttpComponentsClientHttpRequestFactory::new)
-            .build();
+    @Autowired
+    public BaseClient(@Value("${stats-server.url}") String statsServerUri) {
+        this.rest = new RestTemplateBuilder()
+                .uriTemplateHandler(new DefaultUriBuilderFactory(statsServerUri))
+                .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                .build();
+    }
 
     public ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);

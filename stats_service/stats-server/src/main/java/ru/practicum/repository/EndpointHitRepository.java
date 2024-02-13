@@ -32,7 +32,7 @@ public interface EndpointHitRepository extends PagingAndSortingRepository<Endpoi
     @Query("SELECT new ru.practicum.dto.ViewStats(eh.app, eh.uri, COUNT(eh.ip)) FROM EndpointHit eh" +
             " WHERE eh.timestamp BETWEEN :start AND :end AND eh.uri IN :uris" +
             " group by eh.app, eh.uri" +
-            " order by count(distinct eh.ip) desc")
+            " order by count(eh.ip) desc")
     List<ViewStats> findAllElementsWithUris(@Param("start") LocalDateTime start,
                                                     @Param("end") LocalDateTime end,
                                                     @Param("uris") List<String> uris,
@@ -41,7 +41,7 @@ public interface EndpointHitRepository extends PagingAndSortingRepository<Endpoi
     @Query("SELECT new ru.practicum.dto.ViewStats(eh.app, eh.uri, COUNT(eh.ip)) FROM EndpointHit eh" +
             " WHERE eh.timestamp BETWEEN :start AND :end " +
             " group by eh.app, eh.uri" +
-            " order by count(distinct eh.ip) desc")
+            " order by count(eh.ip) desc")
     List<ViewStats> findAllElementsWithoutUris(@Param("start") LocalDateTime start,
                                             @Param("end") LocalDateTime end,
                                             Pageable pageable);

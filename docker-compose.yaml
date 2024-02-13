@@ -1,29 +1,52 @@
 version: '3.8'
 
 services:
-  stats_service:
+  ewm-service:
     build:
-      context: ./stats_service/stats-server
+      context: ./main_service
       dockerfile: ./Dockerfile
+    container_name: ewm-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - main-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/ewm_main_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - STATS_SERVER_URL=http://stats-service:9090
+
+  stats-service:
+    build:
+      context: ./stats_service
+      dockerfile: ./Dockerfile
+    container_name: stats-server
     ports:
       - "9090:9090"
     depends_on:
-      - db
+      - stats-db
     environment:
-      SERVER_PORT: 9090
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/exploreWithMe
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
-      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
-      SPRING_JPA_DATABASE: postgresql
-      SPRING_DATASOURCE_UNDERCLASSMEN: org.postgresql.Driver
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm_stats_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
 
-  db:
-    image: postgres:14-alpine
-    container_name: exploreWithMe-db
+  stats-db:
+    image: postgres:15.3-alpine
+    container_name: stats-db
     ports:
-      - "5432:5432"
+      - "6541:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: exploreWithMe
+      POSTGRES_DB: ewm_stats_db
+
+  main-db:
+    image: postgres:15.3-alpine
+    container_name: main-db
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=ewm_main_db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+

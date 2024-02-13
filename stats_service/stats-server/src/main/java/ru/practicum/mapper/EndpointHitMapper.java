@@ -3,10 +3,10 @@ package ru.practicum.mapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.dto.EndpointHitDto;
-import ru.practicum.dto.ViewStats;
 import ru.practicum.model.EndpointHit;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Component
 @AllArgsConstructor
@@ -19,19 +19,8 @@ public class EndpointHitMapper {
         endpointHit.setApp(endpointHitDto.getApp());
         endpointHit.setUri(endpointHitDto.getUri());
         endpointHit.setIp(endpointHitDto.getIp());
-        endpointHit.setTimestamp(LocalDateTime.now());
+        endpointHit.setTimestamp(LocalDateTime.parse(endpointHitDto.getTimestamp(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         return endpointHit;
-    }
-
-    public ViewStats toDto(EndpointHit endpointHit, long hits) {
-
-        ViewStats viewStats = new ViewStats();
-
-        viewStats.setApp(endpointHit.getApp());
-        viewStats.setUri(endpointHit.getUri());
-        viewStats.setHits(hits);
-
-        return viewStats;
     }
 }
